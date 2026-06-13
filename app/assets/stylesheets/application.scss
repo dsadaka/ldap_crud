@@ -1,0 +1,11 @@
+// Sassy
+// 1. Tell Bootstrap Icons to look in the current directory (which Propshaft maps to /assets/)
+$bootstrap-icons-font-dir: "";
+
+// 2. Import the official Bootstrap gem
+@import "bootstrap";
+
+// 3. Import the local icons file you just copied over
+@import "bootstrap-icons";
+
+// Your custom CSS/SCSS can go below here

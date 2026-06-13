@@ -1,0 +1,66 @@
+<div class="container mt-5">
+  <div class="row mb-5">
+    <div class="col-md-6">
+      <h1 class="text-primary bg-light border p-3">SPAM User Manager</h1>
+    </div>
+    <div class="col-md-5 text-end">
+      <%= form_with url: spam_user_records_path, method: :get, class: "d-inline-block", data: { turbo_frame: "_top" } do |f| %>
+        <%= f.select :customer_id,
+                     LdapRecord.new.customer_list,
+                     { selected: @customer_id, prompt: "Select Customer to View Users" },
+                     { class: "form-select", onchange: "this.form.submit()" } %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-7">
+      <% if @customer_id.present? %>
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Users for <%= @customer_id %></h5>
+            <%= link_to "Add User", new_spam_user_record_path(customer_id: @customer_id), class: "btn btn-sm btn-primary", data: { turbo_frame: "record_form" } %>
+          </div>
+
+          <table class="table table-hover mb-0">
+            <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Service Level</th>
+              <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% if @records.any? %>
+              <% @records.each do |record| %>
+                <tr>
+                  <td><%= record.fullName %></td>
+                  <td><%= record.mail %></td>
+                  <td><span class="badge bg-secondary"><%= record.ou %></span></td>
+                  <td>
+                    <%= link_to "Edit", edit_spam_user_records_path(dn: record.dn), class: "btn btn-sm btn-outline-primary", data: { turbo_frame: "record_form" } %>
+                    <%= link_to "Delete", destroy_spam_user_records_path(dn: record.dn, customer_id: @customer_id), class: "btn btn-sm btn-outline-danger", data: { turbo_method: :delete, turbo_confirm: "Delete this user?" } %>
+                  </td>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr><td colspan="4" class="text-center text-muted">No users found for this customer.</td></tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <p class="text-muted">Please select a customer from the dropdown above to view users.</p>
+      <% end %>
+    </div>
+
+    <div class="col-md-5">
+      <%= turbo_frame_tag "record_form" do %>
+        <div class="p-4 text-center text-muted border rounded bg-light">
+          <p class="mb-0">Select an action to load the form.</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

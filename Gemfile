@@ -67,3 +67,6 @@ group :test do
 end
 
 gem "net-ldap", "~> 0.20.0"
+# Add support for Bootstrap
+gem "dartsass-rails"
+gem 'bootstrap', '~> 5.3.3'
