@@ -38,12 +38,12 @@ class LdapService
     # By initializing this here, we ensure a fresh connection is prepped 
     # whenever the service is called.
     @ldap = Net::LDAP.new(
-      host: 'mail.datakey.cc',
+      host: Rails.application.credentials.ldap_server.host,
       port: 389, # Swap to 636 for LDAPS in production
       auth: {
         method: :simple,
-        username: 'cn=admin,o=dki',
-        password: 'oftheproblem'
+        username: Rails.application.credentials.ldap_server.username,
+        password: Rails.application.credentials.ldap_server.password
       }
     )
     @client_ou = client_ou
