@@ -1,0 +1,11 @@
+<%= turbo_stream.replace "user_row_#{@record.to_param_id}" do %>
+  <%= render partial: "spam_user_row", locals: { record: @record } %>
+<% end %>
+
+<%= turbo_stream.update "flash-container" do %>
+  <%= render 'shared/flash_messages' %>
+<% end %>
+
+<%= turbo_stream.update "record_form" do %>
+  <p class="text-muted">Select an action to load the form.</p>
+<% end %>

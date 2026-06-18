@@ -11,3 +11,4 @@ pin_all_from "vendor/javascript"
 # Explicitly map the core modules
 pin "bootstrap", to: "bootstrap.js"
 pin "@popperjs/core", to: "popper.js"
+pin "spam_user_form", to: "spam_user_form.js"

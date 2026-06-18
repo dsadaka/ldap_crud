@@ -20,17 +20,18 @@ class LdapRecord
 
   # Populates the select tag for Service Level
   def service_levels
-    ['Basic', 'Standard', 'Premium', 'Enterprise']
+    ['Basic', 'Full']
   end
 
   # Populates the select tag for Customer
   def customer_list
     LdapService.new.search_active_customers.map(&:ou).map {|c| c.reverse}
-    # [
-    #   ['Customer A', 'cust_a'],
-    #   ['Customer B', 'cust_b'],
-    #   ['Customer C', 'cust_c']
-    # ]
+  end
+
+  # Returns a unique, web-safe string for HTML attributes
+  def to_param_id
+    # If uid has spaces or odd characters, parameterize cleans them into 'first-last'
+    dn.to_s.parameterize
   end
 
   # Dynamically construct the DN

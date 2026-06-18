@@ -1,0 +1,11 @@
+<%= turbo_stream.replace "spam-users-table-body" do %>
+  <%= render partial: "spam_user_row", collection: @records, as: :record %>
+<% end %>
+
+<%= turbo_stream.update "flash-container" do %>
+  <%= render 'shared/flash_messages' %>
+<% end %>
+
+<%= turbo_stream.update "record_form" do %>
+  <p class="text-muted">Select an action to load the form.</p>
+<% end %>

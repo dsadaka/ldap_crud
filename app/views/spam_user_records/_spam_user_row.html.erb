@@ -1,0 +1,20 @@
+<% uid = record.to_param_id %>
+<tr id="user_row_<%= uid %>">
+  <td>
+    <strong><%= record.fullName %></strong>
+  </td>
+  <td>
+    <span class="text-muted"><%= record.mail %></span>
+  </td>
+  <td>
+    <span class="badge bg-secondary"><%= record.ou %></span>
+  </td>
+  <td>
+    <div class="btn-group btn-group-sm" role="group">
+      <%= link_to "Edit", edit_spam_user_records_path(dn: record.dn), class: "btn btn-sm btn-outline-primary", data: { turbo_frame: "record_form" } %>
+      <%= link_to "Delete", destroy_spam_user_records_path(dn: record.dn, customer_id: @customer_id), class: "btn btn-sm btn-outline-danger", data: { turbo_method: :delete, turbo_confirm: "Delete this user?" } %>
+    </div>
+  </td>
+</tr>
+
+

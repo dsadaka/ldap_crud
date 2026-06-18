@@ -9,3 +9,6 @@ window.Popper = Popper
 // Now import Bootstrap
 import * as bootstrap from "bootstrap"
 window.bootstrap = bootstrap
+
+import { setupFormInteractivity } from "spam_user_form"
+document.addEventListener("turbo:load", setupFormInteractivity);

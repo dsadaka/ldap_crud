@@ -27,36 +27,63 @@ class SpamUserRecordsController < ApplicationController
     end
   end
 
+  # app/controllers/spam_user_records_controller.rb
+
+  # app/controllers/spam_user_records_controller.rb
+
+  # app/controllers/spam_user_records_controller.rb
+
   def create
     @record = LdapRecord.new(record_params)
 
-    unless @record.valid?
-      flash[:alert] = "Validation Error: #{@record.errors.full_messages.join(', ')}"
-      return render :index, status: :unprocessable_entity
-    end
+    # 1. Run local model validations first
+    if @record.valid?
+      # 2. If valid, attempt the LDAP directory write
+      if @ldap_service.add_record(dn: @record.dn, attributes: @record.attributes_for_create)
+        entries = @ldap_service.search_by_customer(customer_id: LdapRecord.extract_customer_id(@record.dn))
+        @records = entries.map { |entry| LdapRecord.from_entry(entry) }
+        flash.now[:notice] = "User was successfully created."
 
-    if @ldap_service.add_record(dn: @record.dn, attributes: @record.attributes_for_create)
-      flash[:notice] = "Record added successfully."
-      redirect_to spam_user_records_path(customer_id: @record.customer_id)
+        respond_to do |format|
+          format.turbo_stream
+          format.html { redirect_to spam_user_records_path(customer_id: @record.customer_id) }
+        end
+      else
+        # Captures LDAP-specific directory errors
+        flash.now[:alert] = "LDAP Server Error: #{@ldap_service.error_message}"
+        render :index, status: :unprocessable_entity
+      end
     else
-      flash[:alert] = "Error: #{@ldap_service.error_message}"
+      # Captures your local model validation failure message
+      flash.now[:alert] = "Record is invalid. Please check the highlighted fields."
       render :index, status: :unprocessable_entity
     end
   end
 
   def update
     @record = LdapRecord.new(record_params)
+    @record.dn = params[:id]
 
-    unless @record.valid?
-      flash[:alert] = "Validation Error: #{@record.errors.full_messages.join(', ')}"
-      return render :index, status: :unprocessable_entity
-    end
+    # 1. Run local model validations first
+    if @record.valid?
+      # 2. If valid, attempt the LDAP directory modification
+      if @ldap_service.update_record(dn: @record.dn, operations: @record.build_update_operations)
+        entries = @ldap_service.search_by_customer(customer_id: LdapRecord.extract_customer_id(@record.dn))
+        @records = entries.map { |entry| LdapRecord.from_entry(entry) }
+        flash.now[:notice] = "User was successfully updated."
 
-    if @ldap_service.update_record(dn: @record.dn, operations: @record.build_update_operations)
-      flash[:notice] = "Record updated successfully."
-      redirect_to spam_user_records_path(customer_id: @record.customer_id)
+        respond_to do |format|
+          format.turbo_stream
+          format.html { redirect_to spam_user_records_path(customer_id: @record.customer_id) }
+        end
+      else
+        # Captures LDAP-specific directory errors
+        flash.now[:alert] = "LDAP Server Error: #{@ldap_service.error_message}"
+        render :index, status: :unprocessable_entity
+      end
     else
-      flash[:alert] = "Error: #{@ldap_service.error_message}"
+      # Captures your local model validation failure message
+      flash.now[:alert] = "Record is invalid. Please check the highlighted fields."
       render :index, status: :unprocessable_entity
     end
   end

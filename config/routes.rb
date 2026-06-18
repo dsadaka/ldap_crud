@@ -4,8 +4,8 @@ Rails.application.routes.draw do
   resources :spam_user_records, only: [:index, :new, :create] do
     collection do
       get :edit
-      put :update
-      delete :destroy
+      put :update, as: :update
+      delete :destroy, as: :destroy
     end
   end
 end

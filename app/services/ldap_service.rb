@@ -88,13 +88,13 @@ class LdapService
       false
     end
   end
-  # READ: Search for multiple records using a standard LDAP filter string
-  def search(filter_string: '(objectClass=inetOrgPerson)')
+  # READ: Search for multiple user records using a standard LDAP filter string
+  def search(filter_string: '(objectClass=inetOrgPerson)', base: BASE_CONTEXT)
     filter = Net::LDAP::Filter.construct(filter_string)
     records = []
 
     # The search method yields each entry it finds to the block
-    @ldap.search(base: BASE_CONTEXT, filter: filter) do |entry|
+    @ldap.search(base: base, filter: filter) do |entry|
       records << entry
     end
 
@@ -104,10 +104,6 @@ class LdapService
       @error_message = @ldap.get_operation_result.message
       nil
     end
-  end
-
-  def search_all_customers
-    ou_records = search(filter_string: '(objectClass=organizationalUnit)')
   end
 
   def search_active_customers
@@ -128,8 +124,8 @@ class LdapService
       nil
     end
   end
-  def search_by_customer
-
+  def search_by_customer(customer_id: nil)
+    search(base: "ou=#{customer_id},#{BASE_CONTEXT}")
   end
 
   # READ: Find a single record by its Common Name (CN) within the base context
