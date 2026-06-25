@@ -1,4 +1,4 @@
-<div class="container mt-5">
+<div id="main-spam-users-container" class="container mt-5" data-position-anchor="top">
   <div id="flash-container">
     <%= render  'shared/flash_messages' %>
   </div>
@@ -21,8 +21,11 @@
       <% if @customer_id.present? %>
         <div class="card">
           <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Users for <%= @customer_id %></h5>
-            <%= link_to "Add User", new_spam_user_record_path(customer_id: @customer_id), class: "btn btn-sm btn-primary", data: { turbo_frame: "record_form" } %>
+            <h5 class="mb-0"><%= pluralize(@records.count, 'User') %> for <%= @customer_id %></h5>
+            <%= link_to "Add User",
+                        new_spam_user_record_path(customer_id: @customer_id),
+                        class: "btn btn-sm btn-primary",
+                        data: { turbo_frame: "record_form", turbo_scroll: false } %>
           </div>
 
           <table class="table table-hover mb-0">

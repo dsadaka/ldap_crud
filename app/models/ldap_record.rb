@@ -10,7 +10,7 @@ class LdapRecord
 
   attr_accessor :dn, *USER_ATTRIBUTES
 
-  validates :mail, :ou, :customer_id, presence: true
+  validates :mail, :ou, :customer_id, :sn, presence: true
 
   # Ensure the submitted 'ou' exactly matches one of the strings returned by service_levels
   validates :ou, inclusion: {

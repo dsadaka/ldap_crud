@@ -1,5 +1,9 @@
-<%= turbo_frame_tag "record_form" do %>
   <div class="card mb-4 border-primary">
+
+    <% if flash[:alert].present? || @error.present? %>
+      <%= render  'shared/flash_messages' %>
+    <% end %>
+
     <div class="card-header bg-primary text-white">
       <h2 class="h5 mb-0"><%= @record.dn.present? ? "Edit Record" : "Add New Record" %></h2>
     </div>
@@ -13,9 +17,11 @@
           <%= f.hidden_field :dn %>
         <% end %>
 
+        <%= f.hidden_field :customer_id %>
+
         <div class="mb-3">
           <%= f.label :customer_id, "Customer", class: "form-label" %>
-          <%= f.select :customer_id, @record.customer_list, { prompt: "Select a Customer" }, class: "form-select", required: true %>
+          <%= f.select :customer_id, @record.customer_list, { prompt: "Select a Customer" }, class: "form-select", disabled: true %>
           <div class="invalid-feedback">Please select a customer.</div>
         </div>
 
@@ -62,4 +68,3 @@
       <% end %>
     </div>
   </div>
-<% end %>

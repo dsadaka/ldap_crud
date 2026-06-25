@@ -11,7 +11,9 @@
   </td>
   <td>
     <div class="btn-group btn-group-sm" role="group">
-      <%= link_to "Edit", edit_spam_user_records_path(dn: record.dn), class: "btn btn-sm btn-outline-primary", data: { turbo_frame: "record_form" } %>
+      <%= link_to "Edit", edit_spam_user_records_path(dn: record.dn), class: "btn btn-sm btn-outline-primary",
+                  data: { turbo_frame: "record_form", row_id: "user_row_#{uid}" }
+      %>
       <%= link_to "Delete", destroy_spam_user_records_path(dn: record.dn, customer_id: @customer_id), class: "btn btn-sm btn-outline-danger", data: { turbo_method: :delete, turbo_confirm: "Delete this user?" } %>
     </div>
   </td>

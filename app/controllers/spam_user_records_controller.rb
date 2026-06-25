@@ -6,7 +6,7 @@ class SpamUserRecordsController < ApplicationController
 
     if @customer_id.present?
       entries = @ldap_service.search_by_customer(customer_id: @customer_id)
-      @records = entries.map { |entry| LdapRecord.from_entry(entry) }
+      @records = entries.map { |entry| LdapRecord.from_entry(entry) }.sort_by { |user| user.mail.to_s.downcase }
     else
       @records = []
     end
@@ -79,12 +79,18 @@ class SpamUserRecordsController < ApplicationController
       else
         # Captures LDAP-specific directory errors
         flash.now[:alert] = "LDAP Server Error: #{@ldap_service.error_message}"
-        render :index, status: :unprocessable_entity
+        # CRITICAL: Force the :html format here
+        respond_to do |format|
+          format.html { render :edit, status: :unprocessable_entity }
+        end
       end
     else
       # Captures your local model validation failure message
-      flash.now[:alert] = "Record is invalid. Please check the highlighted fields."
-      render :index, status: :unprocessable_entity
+      flash.now[:alert] = "Record is invalid."
+      # CRITICAL: Force the :html format here
+      respond_to do |format|
+        format.html { render :edit, status: :unprocessable_entity }
+      end
     end
   end
 
