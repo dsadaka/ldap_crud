@@ -91,7 +91,7 @@ GEM
       popper_js (>= 2.11.8, < 3)
     bootstrap_views_generator (0.1.16)
       railties (>= 6)
-    brakeman (8.0.4)
+    brakeman (8.0.5)
       racc
     builder (3.3.0)
     bundler-audit (0.9.3)
