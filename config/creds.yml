@@ -1,0 +1,5 @@
+users:
+  admin:
+    password_digest: "$2a$12$FVhueo5f0bFUOjeANdYV9.e2LAyGZ8LedrI3mooMVz2zkvB8nPQEe"
+  soco:
+    password_digest: "$2a$12$KyMbA7oIiiI6/lF7St5WiusCvEVU8K2h0l1RSoiRv0bNHpHrcmo1."

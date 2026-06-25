@@ -46,9 +46,11 @@
 
     <div class="col-md-5">
       <%= turbo_frame_tag "record_form" do %>
-        <div class="p-4 text-center text-muted border rounded bg-light">
-          <p class="mb-0">Select an action to load the form.</p>
-        </div>
+        <% if params[:customer_id].present? %>
+          <div class="p-4 text-center text-muted border rounded bg-light">
+            <p class="mb-0">Click [Add User] or [Edit] to load the form.</p>
+          </div>
+        <% end %>
       <% end %>
     </div>
   </div>

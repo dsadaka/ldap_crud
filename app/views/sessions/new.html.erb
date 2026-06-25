@@ -1,0 +1,38 @@
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+  <div class="card shadow-sm p-4" style="width: 100%; max-width: 400px;">
+
+    <div class="text-center mb-4">
+      <h1 class="h3 mb-3 fw-normal">Sign In</h1>
+    </div>
+
+    <% if flash[:alert] %>
+      <div class="alert alert-danger role="alert">
+      <%= flash[:alert] %>
+      </div>
+    <% end %>
+
+    <%= form_with url: login_path, local: true, data: { turbo: false } do |f| %>
+      <div class="form-floating mb-3">
+        <%= f.text_field :username,
+                         class: "form-control",
+                         id: "floatingUsername",
+                         placeholder: "Username",
+                         required: true,
+                         autofocus: true %>
+        <%= f.label :username, for: "floatingUsername" %>
+      </div>
+
+      <div class="form-floating mb-4">
+        <%= f.password_field :password,
+                             class: "form-control",
+                             id: "floatingPassword",
+                             placeholder: "Password",
+                             required: true %>
+        <%= f.label :password, for: "floatingPassword" %>
+      </div>
+
+      <%= f.submit "Log In", class: "w-100 btn btn-lg btn-primary" %>
+    <% end %>
+
+    </div>
+</div>
