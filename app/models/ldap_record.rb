@@ -25,7 +25,7 @@ class LdapRecord
 
   # Populates the select tag for Customer
   def customer_list
-    LdapService.new.search_active_customers.map(&:ou).map {|c| c.reverse}
+    LdapService.new.search_active_customers.map(&:ou).map {|c| c.reverse} rescue []
   end
 
   # Returns a unique, web-safe string for HTML attributes
