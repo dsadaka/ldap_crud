@@ -7,7 +7,14 @@ image: dsadaka/pristine-email
 # Deploy to these servers.
 servers:
   web:
-    - pristine.datakey.cc
+    hosts:
+      - pristine.datakey.cc
+    options:
+      dns:
+        - 192.168.1.96
+        - 192.168.1.60
+        - 8.8.8.8
+        - 1.1.1.1
   # job:
   #   hosts:
   #     - 192.168.0.1
