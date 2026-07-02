@@ -129,10 +129,4 @@ ssh:
 #     port: 6379
 #     directories:
 #       - data:/data
-logging:
-  request_headers:
-    - Cache-Control
-    - X-Forwarded-Proto
-  response_headers:
-    - X-Request-ID
-    - X-Request-Start
+
