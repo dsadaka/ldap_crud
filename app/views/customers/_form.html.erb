@@ -1,0 +1,90 @@
+<%= form_with model: @customer,
+              url: @customer.dn.present? ? customer_path(id: @customer.customer_id) : customers_path,
+              method: @customer.dn.present? ? :patch : :post do |f| %>
+
+  <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <h4 class="mb-0 text-primary">
+      <% if @customer.dn.present? %>
+        <i class="bi bi-pencil-square me-2"></i>Edit Customer
+      <% else %>
+        <i class="bi bi-building-add me-2"></i>New Customer
+      <% end %>
+    </h4>
+  </div>
+
+  <% if @customer.errors.any? %>
+    <div class="alert alert-danger shadow-sm py-2">
+      <strong><i class="bi bi-exclamation-triangle-fill me-2"></i>Please fix the following:</strong>
+      <ul class="mb-0 mt-1">
+        <% @customer.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= f.label :customer_id, "Customer ID", class: "form-label fw-bold" %>
+    <%= f.text_field :customer_id,
+                     class: "form-control",
+                     placeholder: "Enter a short version of the customer name",
+                     readonly: @customer.dn.present?,
+                     required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :customer_name, "Company Name", class: "form-label fw-bold" %>
+    <%= f.text_field :customer_name, class: "form-control", required: true %>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <%= f.label :domain_name, "Base Domain", class: "form-label fw-bold" %>
+      <%= f.text_field :domain_name, class: "form-control", placeholder: "e.g., datakey.cc", required: true %>
+    </div>
+    <div class="col-md-6">
+      <%= f.label :mx_record, "Current MX Record", class: "form-label fw-bold" %>
+      <%= f.text_field :mx_record, class: "form-control", placeholder: "e.g., mx.datakey.cc", required: true %>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <%= f.label :email, "Contact Email", class: "form-label fw-bold" %>
+      <%= f.email_field :email, class: "form-control", required: true %>
+    </div>
+    <div class="col-md-6">
+      <%= f.label :phone, "Contact Phone", class: "form-label fw-bold" %>
+      <%= f.telephone_field :phone, class: "form-control", required: true %>
+    </div>
+  </div>
+
+  <hr class="my-4 text-muted">
+
+  <h6 class="fw-bold mb-3">Address Information</h6>
+
+  <div class="mb-3">
+    <%= f.label :street, "Street Address", class: "form-label" %>
+    <%= f.text_field :street, class: "form-control", placeholder: "e.g., 123 Cypress Lane" %>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-md-5">
+      <%= f.label :city, "City", class: "form-label" %>
+      <%= f.text_field :city, class: "form-control", placeholder: "e.g., Pompano Beach" %>
+    </div>
+    <div class="col-md-3">
+      <%= f.label :state, "State", class: "form-label" %>
+      <%= f.text_field :state, class: "form-control", placeholder: "FL" %>
+    </div>
+    <div class="col-md-4">
+      <%= f.label :zipcode, "Zip Code", class: "form-label" %>
+      <%= f.text_field :zipcode, class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+    <%= link_to "Cancel", customers_path, class: "btn btn-outline-secondary", data: { turbo_frame: "customer_form" } %>
+    <%= f.submit "Save Customer", class: "btn btn-primary" %>
+  </div>
+<% end %>

@@ -1,0 +1,36 @@
+<tr id="customer_row_<%= customer.to_param_id %>">
+  <td>
+    <span class="badge bg-dark"><%= customer.customer_id %></span>
+  </td>
+  <td>
+    <strong><%= customer.customer_name %></strong><br>
+
+    <% if customer.email.present? %>
+      <small class="text-muted d-block"><i class="bi bi-envelope me-1"></i><%= customer.email %></small>
+    <% end %>
+
+    <% if customer.phone.present? %>
+      <small class="text-muted d-block"><i class="bi bi-telephone me-1"></i><%= customer.phone %></small>
+    <% end %>
+
+    <% address = [customer.street, customer.city, customer.state, customer.zipcode].select(&:present?).join(", ") %>
+    <% if address.present? %>
+      <small class="text-muted d-block mt-1"><i class="bi bi-geo-alt me-1"></i><%= address %></small>
+    <% end %>
+  </td>
+  <td>
+    <strong><i class="bi bi-globe me-1"></i><%= customer.domain_name %></strong><br>
+    <small class="text-primary"><i class="bi bi-hdd-network me-1"></i><%= customer.mx_record %></small>
+  </td>
+  <td>
+    <div class="btn-group btn-group-sm" role="group">
+      <%= link_to "Edit", edit_customer_path(id: customer.customer_id),
+                  class: "btn btn-outline-primary",
+                  data: { turbo_frame: "customer_form" } %>
+
+      <%= link_to "Delete", customer_path(id: customer.customer_id),
+                  class: "btn btn-outline-danger",
+                  data: { turbo_method: :delete, turbo_confirm: "WARNING: This will delete the customer and ALL associated users. Are you sure?" } %>
+    </div>
+  </td>
+</tr>

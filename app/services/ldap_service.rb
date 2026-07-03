@@ -24,7 +24,9 @@ class LdapService
   attr_reader :error_message
 
   BASE_CONTEXT = 'ou=SPAMFILTER,o=DKI'.freeze
-  ACTIVE_CUSTS = %w[BGG HSS SEBCO datakey web-site1].freeze
+
+  # These constants were only used to initialized data
+  ACTIVE_CUSTS = %w[BGG HSS SEBCO datakey web-site1 BURBUG].freeze
   ACTIVE_CUST_NAMES = {
     BGG: "Behar, Gutt & Glazer",
     HSS: "Hydraulic Sales & service",
@@ -88,6 +90,34 @@ class LdapService
       false
     end
   end
+
+
+  def destroy_customer_and_users(customer_id)
+    # 1. Fetch all users belonging to this specific customer
+    child_users = search_by_customer_id(customer_id: customer_id)
+
+    # 2. Cascade Delete: Wipe out every child user first
+    if child_users.any?
+      child_users.each do |user|
+        unless @ldap.delete(dn: user.dn)
+          @error_message = "Failed to delete child user #{user.mail}: #{@ldap.get_operation_result.message}"
+          return false
+        end
+      end
+    end
+
+    # 3. Construct the exact DN for the customer using your base context
+    customer_dn = "ou=#{customer_id},#{BASE_CONTEXT}"
+
+    # 4. Delete the now-empty parent Customer record
+    if @ldap.delete(dn: customer_dn)
+      true
+    else
+      @error_message = "Failed to delete Customer: #{@ldap.get_operation_result.message}"
+      false
+    end
+  end
+
   # READ: Search for multiple user records using a standard LDAP filter string
   def search(filter_string: '(objectClass=inetOrgPerson)', base: BASE_CONTEXT)
     filter = Net::LDAP::Filter.construct(filter_string)
@@ -107,13 +137,22 @@ class LdapService
   end
 
   def search_active_customers
-    # 1. Create the filter for the objectClass
+    search_customers(status: 'active')
+  end
+
+  def search_inactive_customers
+    search_customers(status: 'inactive')
+  end
+  def search_customers(status: 'active')
+    # 1. Base objectClass filter
     oc_filter = Net::LDAP::Filter.eq("objectClass", "organizationalUnit")
-    # 2. Create an array of filters for the OUs and join them with the OR (|) operator
-    ou_filter = ACTIVE_CUSTS.map { |ou| Net::LDAP::Filter.eq("ou", ou) }.inject(:|)
+
+    # 2. Status filter mapping to the description attribute
+    status_filter = Net::LDAP::Filter.eq("description", status)
 
     records = []
-    @ldap.search(base: BASE_CONTEXT, filter: oc_filter & ou_filter) do |entry|
+    # 3. Combine with the bitwise AND operator (&)
+    @ldap.search(base: BASE_CONTEXT, filter: oc_filter & status_filter) do |entry|
       records << entry
     end
 
@@ -124,7 +163,8 @@ class LdapService
       nil
     end
   end
-  def search_by_customer(customer_id: nil)
+
+  def search_by_customer_id(customer_id: nil)
     search(base: "ou=#{customer_id},#{BASE_CONTEXT}")
   end
 
@@ -163,6 +203,47 @@ class LdapService
     end
   end
 
+  #
+  # Currently deactivaation and reactivation must be done from the console (or some other LDAP editor)
+  #
+  def reactivate_customer(customer_id:)
+    return unless customer_id
+    inactive_custs = search_inactive_customers
+    return unless inactive_custs
+    cust = inactive_custs.select {|c| c[:ou][0] == customer_id}.first
+
+    if cust
+      if update_attribute(dn: cust[:dn], attribute_name: :description, attribute_value: 'active')
+        puts "Customer ID: #{customer_id} set to active"
+        true
+      else
+        @error_message
+      end
+    else
+      @error_message = @ldap.get_operation_result.message
+      nil
+    end
+  end
+
+  def deactivate_customer(customer_id:)
+    return unless customer_id
+    active_custs = search_active_customers
+    return unless active_custs
+    cust = active_custs.select {|c| c[:ou][0] == customer_id}.first
+
+    if cust
+      if update_attribute(dn: cust[:dn], attribute_name: :description, attribute_value: 'inactive')
+        puts "Customer ID: #{customer_id} set to #{cust[:description]}"
+        true
+      else
+        @error_message
+      end
+    else
+      @error_message = @ldap.get_operation_result.message
+      nil
+    end
+  end
+  # These methods are not to be used after initialization
   def add_full_cust_names
 
     search_active_customers.each do |cust|
@@ -171,6 +252,17 @@ class LdapService
       next if ou.count > 1 # Already has a customer name
       update_attribute(dn: dn, attribute_name: :ou, attribute_value: ou << ACTIVE_CUST_NAMES[ou[0].to_sym])
       puts "dn: #{dn}, ou: #{ou}, Name: #{ACTIVE_CUST_NAMES[ou[0].to_sym]}"
+    end
+  end
+
+  def set_active_flag
+
+    search_active_customers.each do |cust|
+      dn = cust[:dn]
+      active = cust[:description]
+      next if active[0] == 'active' && active.count == 1
+      update_attribute(dn: dn, attribute_name: :description, attribute_value: ['active'])
+      puts "dn: #{dn}, Description: #{cust[:description]}"
     end
   end
 end

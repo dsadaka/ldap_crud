@@ -23,6 +23,7 @@
     <%#= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   </head>
 
   <body>
@@ -54,6 +55,33 @@
 
     </div>
   </header>
-    <%= yield %>
+  <div class="container-fluid">
+    <div class="row">
+
+      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse vh-100 border-end">
+        <div class="position-sticky pt-4">
+
+          <ul class="nav flex-column">
+            <li class="nav-item mb-2">
+              <%= link_to customers_path, class: "nav-link #{'active fw-bold text-primary' if controller_name == 'customers'}" do %>
+                Customers
+              <% end %>
+            </li>
+            <li class="nav-item">
+              <%= link_to spam_user_records_path, class: "nav-link #{'active fw-bold text-primary' if controller_name == 'spam_user_records'}" do %>
+                Users
+              <% end %>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-4">
+        <%= yield %>
+      </main>
+
+    </div>
+  </div>
+
   </body>
 </html>

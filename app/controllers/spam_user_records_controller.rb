@@ -5,7 +5,7 @@ class SpamUserRecordsController < ApplicationController
     @customer_id = params[:customer_id]
 
     if @customer_id.present?
-      entries = @ldap_service.search_by_customer(customer_id: @customer_id)
+      entries = @ldap_service.search_by_customer_id(customer_id: @customer_id)
       @records = entries.map { |entry| LdapRecord.from_entry(entry) }.sort_by { |user| user.mail.to_s.downcase }
     else
       @records = []
@@ -40,7 +40,7 @@ class SpamUserRecordsController < ApplicationController
     if @record.valid?
       # 2. If valid, attempt the LDAP directory write
       if @ldap_service.add_record(dn: @record.dn, attributes: @record.attributes_for_create)
-        entries = @ldap_service.search_by_customer(customer_id: LdapRecord.extract_customer_id(@record.dn))
+        entries = @ldap_service.search_by_customer_id(customer_id: LdapRecord.extract_customer_id(@record.dn))
         @records = entries.map { |entry| LdapRecord.from_entry(entry) }
         flash.now[:notice] = "User was successfully created."
 
@@ -68,7 +68,7 @@ class SpamUserRecordsController < ApplicationController
     if @record.valid?
       # 2. If valid, attempt the LDAP directory modification
       if @ldap_service.update_record(dn: @record.dn, operations: @record.build_update_operations)
-        entries = @ldap_service.search_by_customer(customer_id: LdapRecord.extract_customer_id(@record.dn))
+        entries = @ldap_service.search_by_customer_id(customer_id: LdapRecord.extract_customer_id(@record.dn))
         @records = entries.map { |entry| LdapRecord.from_entry(entry) }
         flash.now[:notice] = "User was successfully updated."
 

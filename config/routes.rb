@@ -17,4 +17,6 @@ Rails.application.routes.draw do
       delete :destroy, as: :destroy
     end
   end
+
+  resources :customers
 end

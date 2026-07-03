@@ -1,5 +1,5 @@
-<%= turbo_stream.replace "spam-users-table-body" do %>
-  <%= render partial: "spam_user_row", collection: @records, as: :record %>
+<%= turbo_stream.append "spam-users-table_body" do %>
+  <%= render partial: "spam_user_row", locals: { record: @record } %>
 <% end %>
 
 <%= turbo_stream.update "flash-container" do %>
